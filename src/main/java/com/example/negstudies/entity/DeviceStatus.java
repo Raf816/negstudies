@@ -1,4 +1,4 @@
-package com.example.negstudies.model;
+package com.example.negstudies.entity;
 
 public enum DeviceStatus {
     AVAILABLE,

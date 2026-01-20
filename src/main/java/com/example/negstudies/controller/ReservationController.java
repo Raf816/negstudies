@@ -1,15 +1,14 @@
 package com.example.negstudies.controller;
 
-import com.example.negstudies.dto.ReservationResponse;
+import com.example.negstudies.dto.request.CreateReservationRequest;
+import com.example.negstudies.dto.response.ReservationResponse;
 import com.example.negstudies.service.ReservationService;
-import java.util.List;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/reservations")
@@ -18,18 +17,19 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    @GetMapping
-    public List<ReservationResponse> list(@RequestParam(required = false) Long deviceId) {
-        return reservationService.list(deviceId);
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ReservationResponse create(@Valid @RequestBody CreateReservationRequest request) {
+        return reservationService.create(request);
     }
 
     @GetMapping("/{id}")
-    public ReservationResponse get(@PathVariable Long id) {
-        return reservationService.get(id);
+    public ReservationResponse getById(@PathVariable Long id) {
+        return reservationService.getById(id);
     }
 
-    @PatchMapping("/{id}/cancel")
-    public ReservationResponse cancel(@PathVariable Long id) {
-        return reservationService.cancel(id);
+    @GetMapping
+    public List<ReservationResponse> listAll() {
+        return reservationService.listAll();
     }
 }

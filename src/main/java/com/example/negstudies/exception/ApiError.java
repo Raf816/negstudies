@@ -1,17 +1,13 @@
 package com.example.negstudies.exception;
 
 import java.time.OffsetDateTime;
-import java.util.List;
-import lombok.Builder;
-import lombok.Value;
+import java.util.Map;
 
-@Value
-@Builder
-public class ApiError {
-    OffsetDateTime timestamp;
-    int status;
-    String error;
-    String message;
-    String path;
-    List<String> details;
-}
+public record ApiError(
+        OffsetDateTime timestamp,
+        int status,
+        String error,
+        String message,
+        String path,
+        Map<String, String> fieldErrors
+) {}

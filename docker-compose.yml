@@ -1,20 +1,34 @@
 services:
-  app:
-    build: .
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/devices
-      SPRING_DATASOURCE_USERNAME: device_user
-      SPRING_DATASOURCE_PASSWORD: device_pass
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-    depends_on:
-      - db
   db:
-    image: postgres:16-alpine
+    image: postgres:16
+    container_name: device_reservation_db
     environment:
-      POSTGRES_DB: devices
-      POSTGRES_USER: device_user
-      POSTGRES_PASSWORD: device_pass
+      POSTGRES_DB: devicereservation
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppass
     ports:
       - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appuser -d devicereservation"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build: .
+    container_name: device_reservation_app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:postgresql://db:5432/devicereservation
+      DB_USERNAME: appuser
+      DB_PASSWORD: apppass
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:
