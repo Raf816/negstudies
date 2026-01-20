@@ -10,4 +10,6 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     Optional<Device> findByAssetTag(String assetTag);
 
     boolean existsByAssetTag(String assetTag);
+
+    boolean existsByAssetTagAndIdNot(String assetTag, Long id);
 }

@@ -1,6 +1,8 @@
 package com.example.negstudies.controller;
 
 import com.example.negstudies.dto.request.CreateDeviceRequest;
+import com.example.negstudies.dto.request.PatchDeviceRequest;
+import com.example.negstudies.dto.request.UpdateDeviceRequest;
 import com.example.negstudies.dto.response.DeviceResponse;
 import com.example.negstudies.service.DeviceService;
 import jakarta.validation.Valid;
@@ -32,4 +34,16 @@ public class DeviceController {
     public List<DeviceResponse> listAll() {
         return deviceService.listAll();
     }
+
+    @PutMapping("/{id}")
+    public DeviceResponse update(@PathVariable Long id, @Valid @RequestBody UpdateDeviceRequest request) {
+        return deviceService.update(id, request);
+    }
+
+    @PatchMapping("/{id}")
+    public DeviceResponse patch(@PathVariable Long id, @RequestBody PatchDeviceRequest request) {
+        // PATCH supports partial updates; field-level validation is limited without extra work.
+        return deviceService.patch(id, request);
+    }
+
 }
