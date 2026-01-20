@@ -1,0 +1,20 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/devices
+      SPRING_DATASOURCE_USERNAME: device_user
+      SPRING_DATASOURCE_PASSWORD: device_pass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      - db
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: devices
+      POSTGRES_USER: device_user
+      POSTGRES_PASSWORD: device_pass
+    ports:
+      - "5432:5432"
