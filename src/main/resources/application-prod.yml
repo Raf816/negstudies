@@ -1,6 +1,6 @@
 spring:
   config:
-    import: aws-secretsmanager:/prod/device-res/postgres?prefix=db.
+    import: aws-secretsmanager:prod/device-res/postgres?prefix=db.
 
   datasource:
     url: jdbc:postgresql://${db.host}:${db.port}/postgres
