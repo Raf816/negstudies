@@ -36,7 +36,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      SPRING_PROFILES_ACTIVE: prod
+      SPRING_PROFILES_ACTIVE: local
       DB_URL: jdbc:postgresql://db:5432/devicereservation
       DB_USERNAME: appuser
       DB_PASSWORD: apppass
