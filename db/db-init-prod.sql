@@ -21,9 +21,7 @@ CREATE TABLE IF NOT EXISTS devices (
 
 CREATE INDEX IF NOT EXISTS idx_devices_status ON devices(status);
 
--- =====================================================
--- RESERVATIONS TABLE
--- =====================================================
+
 CREATE TABLE IF NOT EXISTS reservations (
                                             id BIGSERIAL PRIMARY KEY,
                                             device_id BIGINT NOT NULL,
@@ -45,9 +43,7 @@ CREATE TABLE IF NOT EXISTS reservations (
 CREATE INDEX IF NOT EXISTS idx_reservations_device_time
     ON reservations(device_id, start_at, end_at);
 
--- =====================================================
--- SEED DATA: DEVICES
--- =====================================================
+
 INSERT INTO devices (name, asset_tag, status)
 VALUES
     ('iPhone 15 Pro', 'IPH-001', 'AVAILABLE'),
@@ -62,9 +58,7 @@ VALUES
     ('MacBook Air M2', 'MAC-002', 'AVAILABLE')
     ON CONFLICT (asset_tag) DO NOTHING;
 
--- =====================================================
--- SEED DATA: RESERVATIONS (NO OVERLAPS)
--- =====================================================
+
 INSERT INTO reservations (device_id, reserved_by, purpose, start_at, end_at)
 SELECT
     d.id,
