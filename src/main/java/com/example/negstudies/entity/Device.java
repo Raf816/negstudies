@@ -2,6 +2,8 @@ package com.example.negstudies.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(
@@ -29,6 +31,7 @@ public class Device {
     private String assetTag;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 30)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "status", nullable = false, columnDefinition = "device_status")
     private DeviceStatus status;
 }
