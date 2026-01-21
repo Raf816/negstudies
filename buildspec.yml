@@ -1,0 +1,40 @@
+version: 0.2
+
+env:
+  variables:
+    DOCKER_IMAGE: device-reservation
+    AWS_REGION: eu-west-2
+    ECR_REPO: 692859936029.dkr.ecr.eu-west-2.amazonaws.com/device-reservation
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto21
+
+  pre_build:
+    commands:
+      - echo "Logging in to Amazon ECR..."
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 692859936029.dkr.ecr.$AWS_REGION.amazonaws.com
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:-latest}
+
+  build:
+    commands:
+      - echo "Building JAR..."
+      - mvn clean package -DskipTests
+      - echo "Building Docker image..."
+      - docker build --platform=linux/amd64 -t $DOCKER_IMAGE .
+      - docker tag $DOCKER_IMAGE:latest $ECR_REPO:$IMAGE_TAG
+      - docker tag $DOCKER_IMAGE:latest $ECR_REPO:latest
+
+  post_build:
+    commands:
+      - echo "Pushing Docker image to ECR..."
+      - docker push $ECR_REPO:$IMAGE_TAG
+      - docker push $ECR_REPO:latest
+      - echo "Writing image definitions file..."
+      - printf '[{"name":"device-reservation","imageUri":"%s"}]' $ECR_REPO:$IMAGE_TAG > imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
