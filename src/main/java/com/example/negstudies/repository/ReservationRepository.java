@@ -16,4 +16,23 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
           and r.endAt > :startAt
     """)
     boolean existsOverlapping(Long deviceId, OffsetDateTime startAt, OffsetDateTime endAt);
+
+    @Query("""
+        select count(r) > 0
+        from Reservation r
+        where r.device.id = :deviceId
+          and r.id <> :reservationId
+          and r.startAt < :endAt
+          and r.endAt > :startAt
+    """)
+    boolean existsOverlappingExcludingSelf(
+            Long deviceId,
+            Long reservationId,
+            OffsetDateTime startAt,
+            OffsetDateTime endAt
+    );
+
+    boolean existsByDeviceId(Long deviceId);
+
+
 }

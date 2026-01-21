@@ -13,6 +13,8 @@ import com.example.negstudies.service.DeviceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.negstudies.repository.ReservationRepository;
+
 
 import java.util.List;
 
@@ -21,6 +23,8 @@ import java.util.List;
 public class DeviceServiceImpl implements DeviceService {
 
     private final DeviceRepository deviceRepository;
+    private final ReservationRepository reservationRepository;
+
 
     @Override
     @Transactional
@@ -103,5 +107,19 @@ public class DeviceServiceImpl implements DeviceService {
 
         return DeviceMapper.toResponse(deviceRepository.save(device));
     }
+
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        Device device = deviceRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Device not found: " + id));
+
+        if (reservationRepository.existsByDeviceId(id)) {
+            throw new ConflictException("Device cannot be deleted because it has existing reservations: " + id);
+        }
+
+        deviceRepository.delete(device);
+    }
+
 
 }

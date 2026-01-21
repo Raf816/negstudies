@@ -13,5 +13,5 @@ public interface DeviceService {
     List<DeviceResponse> listAll();
     DeviceResponse update(Long id, UpdateDeviceRequest request);
     DeviceResponse patch(Long id, PatchDeviceRequest request);
-
+    void delete(Long id);
 }

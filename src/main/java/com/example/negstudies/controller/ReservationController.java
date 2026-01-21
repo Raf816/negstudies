@@ -1,6 +1,7 @@
 package com.example.negstudies.controller;
 
 import com.example.negstudies.dto.request.CreateReservationRequest;
+import com.example.negstudies.dto.request.UpdateReservationRequest;
 import com.example.negstudies.dto.response.ReservationResponse;
 import com.example.negstudies.service.ReservationService;
 import jakarta.validation.Valid;
@@ -32,4 +33,20 @@ public class ReservationController {
     public List<ReservationResponse> listAll() {
         return reservationService.listAll();
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        reservationService.delete(id);
+    }
+
+    @PutMapping("/{id}")
+    public ReservationResponse update(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateReservationRequest request
+    ) {
+        return reservationService.update(id, request);
+    }
+
+
 }

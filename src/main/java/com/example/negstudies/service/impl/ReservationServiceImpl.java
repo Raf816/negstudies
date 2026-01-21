@@ -1,6 +1,7 @@
 package com.example.negstudies.service.impl;
 
 import com.example.negstudies.dto.request.CreateReservationRequest;
+import com.example.negstudies.dto.request.UpdateReservationRequest;
 import com.example.negstudies.dto.response.ReservationResponse;
 import com.example.negstudies.entity.Device;
 import com.example.negstudies.entity.DeviceStatus;
@@ -74,4 +75,51 @@ public class ReservationServiceImpl implements ReservationService {
                 .map(ReservationMapper::toResponse)
                 .toList();
     }
+
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Reservation not found: " + id));
+
+        reservationRepository.delete(reservation);
+    }
+
+    @Override
+    @Transactional
+    public ReservationResponse update(Long id, UpdateReservationRequest request) {
+        OffsetDateTime start = request.getStartAt();
+        OffsetDateTime end = request.getEndAt();
+
+        if (!start.isBefore(end)) {
+            throw new BadRequestException("startAt must be before endAt");
+        }
+
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Reservation not found: " + id));
+
+        Device device = reservation.getDevice();
+
+        if (device.getStatus() != DeviceStatus.AVAILABLE) {
+            throw new ConflictException("Device is not available for reservation updates");
+        }
+
+        if (reservationRepository.existsOverlappingExcludingSelf(
+                device.getId(),
+                reservation.getId(),
+                start,
+                end
+        )) {
+            throw new ConflictException("Updated reservation would overlap with an existing reservation");
+        }
+
+        reservation.setStartAt(start);
+        reservation.setEndAt(end);
+        reservation.setPurpose(
+                request.getPurpose() == null ? null : request.getPurpose().trim()
+        );
+
+        return ReservationMapper.toResponse(reservationRepository.save(reservation));
+    }
+
 }

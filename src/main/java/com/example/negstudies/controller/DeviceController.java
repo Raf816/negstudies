@@ -46,4 +46,11 @@ public class DeviceController {
         return deviceService.patch(id, request);
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        deviceService.delete(id);
+    }
+
+
 }
